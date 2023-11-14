@@ -1,4 +1,5 @@
 import csv
+import sys
 
 class Describe:
     def __init__(self):
@@ -13,7 +14,6 @@ class Describe:
                 self.data.append(line)
         with open(file_name) as csv_file: # get the column names
             self.features_name = str(list(csv_file)[0]).strip('\n').split(',')
-        
         self.find_numerical_columns()
 
     def find_numerical_columns(self): # function to get the names of the columns that contains numerical values
@@ -24,9 +24,100 @@ class Describe:
             except:
                 ()
 
+    def get_describe_values(self, values):
+        values = self.count(values)
+        values = self.mean(values)
+        values = self.std(values)
+        values = self.min(values)
+        values = self.twenty_five(values)
+        values = self.fifty(values)
+        values = self.seventy_five(values)
+        values = self.max(values)
+        return values
+
+    def describe(self):
+        categories = ["Count", "Mean", "Std", "Min", "25%", "50%", "75%", "Max"] # list of all the categories that will be described
+        spacing = [] # list of numbers
+        values = { # dict of dict for every caterogy so when can find the Std of Herbology at values["Std"]["Herbology"]
+            "Count":{item: None for item in self.numerical_features},
+            "Mean":{item: None for item in self.numerical_features},
+            "Std":{item: None for item in self.numerical_features},
+            "Min":{item: None for item in self.numerical_features},
+            "25%":{item: None for item in self.numerical_features},
+            "50%":{item: None for item in self.numerical_features},
+            "75%":{item: None for item in self.numerical_features},
+            "Max":{item: None for item in self.numerical_features}
+        }
+        values = self.get_describe_values(values)
+        # print(values)
+        print("{:<8}".format(""), end="")
+        for column_name in self.numerical_features:
+            length = len(column_name) + 2
+            print ("{:<{}}".format(column_name, length), end="")
+            spacing.append(length)
+        print()
+        for category in categories:
+            print(category, end="")
+            for column in self.numerical_features:
+                print("{:<{}}".format("", 5), "{}".format(values[category][column]), end="")
+            print()
+
+    def count(self, values):
+        count_values = values["Count"]
+        track_count = {
+            item: 0 for item in self.numerical_features
+        }
+        for line in self.data:
+            for features in self.numerical_features:
+                try:
+                    line[features]
+                    track_count[features] += 1
+                except:
+                    ()
+        for features in self.numerical_features:
+            count_values[features] = track_count[features]
+        values["Count"] = count_values
+        return values
+
+    def mean(self, values): 
+        mean_values = values["Mean"]
+        values["Mean"] = mean_values
+        return values
+
+    def std(self, values): 
+        std_values = values["Std"]
+        values["Std"] = std_values
+        return values
+
+    def min(self, values): 
+        min_values = values["Min"]
+        values["Min"] = min_values
+        return values
+
+    def twenty_five(self, values): 
+        twenty_five_values = values["25%"]
+        values["25%"] = twenty_five_values
+        return values
+
+    def fifty(self, values): 
+        fifty_values = values["50%"]
+        values["50%"] = fifty_values
+        return values
+
+    def seventy_five(self, values): 
+        seventy_five_values = values["75%"]
+        values["75%"] = seventy_five_values
+        return values
+
+    def max(self, values): 
+        max_values = values["Max"]
+        values["Max"] = max_values
+        return values
+
 def main():
     d = Describe()
-    d.parse("dataset_test.csv")
+    d.parse(sys.argv[1])
+    d.describe()
 
 if __name__:
     main()
