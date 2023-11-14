@@ -1,5 +1,6 @@
 import csv
 import sys
+from math import *
 
 class Describe:
     def __init__(self):
@@ -70,8 +71,8 @@ class Describe:
         for line in self.data:
             for features in self.numerical_features:
                 try:
-                    line[features]
-                    track_count[features] += 1
+                    if line[features] != '':
+                        track_count[features] += 1
                 except:
                     ()
         for features in self.numerical_features:
@@ -81,11 +82,35 @@ class Describe:
 
     def mean(self, values): 
         mean_values = values["Mean"]
+        track_mean = {
+            item: 0 for item in self.numerical_features
+        }
+        for line in self.data:
+            for features in self.numerical_features:
+                try:
+                    if line[features] != '':
+                        track_mean[features] += float(line[features])
+                except:
+                    ()
+        for features in self.numerical_features:
+            mean_values[features] = track_mean[features] / values["Count"][features]
         values["Mean"] = mean_values
         return values
 
     def std(self, values): 
         std_values = values["Std"]
+        track_std = {
+            item: 0 for item in self.numerical_features
+        }
+        for line in self.data:
+            for features in self.numerical_features:
+                try:
+                    if line[features] != '':
+                        track_std[features] += (float(line[features]) - values["Mean"][features])**2
+                except:
+                    ()
+        for features in self.numerical_features:
+            std_values[features] = sqrt((track_std[features] / (values["Count"][features] - 1)))
         values["Std"] = std_values
         return values
 
