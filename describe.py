@@ -40,14 +40,14 @@ class Describe:
         categories = ["Count", "Mean", "Std", "Min", "25%", "50%", "75%", "Max"] # list of all the categories that will be described
         spacing = [] # list of numbers
         values = { # dict of dict for every caterogy so when can find the Std of Herbology at values["Std"]["Herbology"]
-            "Count":{item: None for item in self.numerical_features},
-            "Mean":{item: None for item in self.numerical_features},
-            "Std":{item: None for item in self.numerical_features},
-            "Min":{item: None for item in self.numerical_features},
-            "25%":{item: None for item in self.numerical_features},
-            "50%":{item: None for item in self.numerical_features},
-            "75%":{item: None for item in self.numerical_features},
-            "Max":{item: None for item in self.numerical_features}
+            "Count":{item: 0.0 for item in self.numerical_features},
+            "Mean":{item: 0.0 for item in self.numerical_features},
+            "Std":{item: 0.0 for item in self.numerical_features},
+            "Min":{item: 0.0 for item in self.numerical_features},
+            "25%":{item: 0.0 for item in self.numerical_features},
+            "50%":{item: 0.0 for item in self.numerical_features},
+            "75%":{item: 0.0 for item in self.numerical_features},
+            "Max":{item: 0.0 for item in self.numerical_features}
         }
         values = self.get_describe_values(values)
         # print(values)
@@ -60,7 +60,7 @@ class Describe:
         for category in categories:
             print(category, end="")
             for column in self.numerical_features:
-                print("{:<{}}".format("", 5), "{}".format(values[category][column]), end="")
+                print("{:<{}}".format("", 5), "{:.6f}".format(values[category][column]), end="")
             print()
 
     def count(self, values):
@@ -116,11 +116,38 @@ class Describe:
 
     def min(self, values): 
         min_values = values["Min"]
+        track_min = {
+            item: float('inf') for item in self.numerical_features
+        }
+        for line in self.data:
+            for features in self.numerical_features:
+                try:
+                    if line[features] != '' and float(line[features]) < track_min[features]:
+                        track_min[features] = float(line[features])
+                except:
+                    ()
+        for features in self.numerical_features:
+            min_values[features] = track_min[features]
         values["Min"] = min_values
         return values
 
     def twenty_five(self, values): 
         twenty_five_values = values["25%"]
+        values_ascendenting = {
+            item: [] for item in self.numerical_features
+        }
+
+        for line in self.data:
+            for features in self.numerical_features:
+                try:
+                    if line[features] != '':
+                        values_ascendenting[features].append(float(line[features]))
+                except:
+                    ()
+        for features in self.numerical_features:
+            values_ascendenting[features] = sorted(values_ascendenting[features])
+            percentile_index = 25 / 100 * (values["Count"][features] + 1)
+            twenty_five_values[features] = values_ascendenting[features][int(percentile_index)]
         values["25%"] = twenty_five_values
         return values
 
@@ -136,6 +163,18 @@ class Describe:
 
     def max(self, values): 
         max_values = values["Max"]
+        track_max = {
+            item: float('-inf') for item in self.numerical_features
+        }
+        for line in self.data:
+            for features in self.numerical_features:
+                try:
+                    if line[features] != '' and float(line[features]) > track_max[features]:
+                        track_max[features] = float(line[features])
+                except:
+                    ()
+        for features in self.numerical_features:
+            max_values[features] = track_max[features]
         values["Max"] = max_values
         return values
 
