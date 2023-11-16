@@ -30,9 +30,9 @@ class Describe:
         values = self.mean(values)
         values = self.std(values)
         values = self.min(values)
-        values = self.twenty_five(values)
-        values = self.fifty(values)
-        values = self.seventy_five(values)
+        values = self.percentile(values, 25) # TODO handle bonuses as input with other value than 25/50/75
+        values = self.percentile(values, 50) # TODO handle bonuses as input 
+        values = self.percentile(values, 75) # TODO handle bonuses as input 
         values = self.max(values)
         return values
 
@@ -131,8 +131,8 @@ class Describe:
         values["Min"] = min_values
         return values
 
-    def twenty_five(self, values): 
-        twenty_five_values = values["25%"]
+    def percentile(self, values, percentile):
+        percentile_values = values[str(percentile) + "%"]
         values_ascendenting = {
             item: [] for item in self.numerical_features
         }
@@ -145,25 +145,13 @@ class Describe:
                     ()
         for features in self.numerical_features:
             values_ascendenting[features] = sorted(values_ascendenting[features])
-            percentile_index = 25 / 100 * (values["Count"][features] + 1)
+            percentile_index = int(percentile) / 100 * (values["Count"][features] - 1)
             index_offset = percentile_index - int(percentile_index)
             diff = 0
             if index_offset != 0:
-                print(index_offset)
-                diff = (values_ascendenting[features][int(percentile_index) + 1] - values_ascendenting[features][int(percentile_index)]) * (index_offset * 100) / 100
-                print(features, diff)
-            twenty_five_values[features] = values_ascendenting[features][int(percentile_index)] - diff
-        values["25%"] = twenty_five_values
-        return values
-
-    def fifty(self, values): 
-        fifty_values = values["50%"]
-        values["50%"] = fifty_values
-        return values
-
-    def seventy_five(self, values): 
-        seventy_five_values = values["75%"]
-        values["75%"] = seventy_five_values
+                diff = (values_ascendenting[features][int(percentile_index) + 1] - values_ascendenting[features][int(percentile_index)]) / 100 * (index_offset * 100) 
+            percentile_values[features] = values_ascendenting[features][int(percentile_index)] + diff
+        values[str(percentile) +"%"] = percentile_values
         return values
 
     def max(self, values): 
