@@ -136,7 +136,6 @@ class Describe:
         values_ascendenting = {
             item: [] for item in self.numerical_features
         }
-
         for line in self.data:
             for features in self.numerical_features:
                 try:
@@ -147,7 +146,13 @@ class Describe:
         for features in self.numerical_features:
             values_ascendenting[features] = sorted(values_ascendenting[features])
             percentile_index = 25 / 100 * (values["Count"][features] + 1)
-            twenty_five_values[features] = values_ascendenting[features][int(percentile_index)]
+            index_offset = percentile_index - int(percentile_index)
+            diff = 0
+            if index_offset != 0:
+                print(index_offset)
+                diff = (values_ascendenting[features][int(percentile_index) + 1] - values_ascendenting[features][int(percentile_index)]) * (index_offset * 100) / 100
+                print(features, diff)
+            twenty_five_values[features] = values_ascendenting[features][int(percentile_index)] - diff
         values["25%"] = twenty_five_values
         return values
 
