@@ -50,18 +50,35 @@ class Describe:
             "Max":{item: 0.0 for item in self.numerical_features}
         }
         values = self.get_describe_values(values)
+        # First, print the header row
+        header = "{:<30}".format("")  # Empty cell at the top left corner
+        for category in values["Count"].keys():
+            header += "{:<30}".format(category)
+        print(header)
+
+        # Then, print the rows for each statistic
+        for stat in values.keys():
+            row = "{:<30}".format(stat)  # Start with the statistic name
+            for category in values[stat].keys():
+                row += "{:<30.6f}".format(values[stat][category])  # Add each value
+            print(row)
         # print(values)
-        print("{:<8}".format(""), end="")
-        for column_name in self.numerical_features:
-            length = len(column_name) + 2
-            print ("{:<{}}".format(column_name, length), end="")
-            spacing.append(length)
-        print()
-        for category in categories:
-            print(category, end="")
-            for column in self.numerical_features:
-                print("{:<{}}".format("", 5), "{:.6f}".format(values[category][column]), end="")
-            print()
+        # column_names = []
+        # print("{:<12}".format(""), end="")
+        # for column_name in self.numerical_features:
+        #     column_names.append(column_name)
+        #     # length = len(column_name) + 3
+        #     # print ("{:<{}}".format(column_name, length), end="")
+        #     # spacing.append(length)
+        # print("%s" %(column_names), end="")
+        # print()
+        # for category in categories:
+        #     print(category, end="")
+        #     for column in self.numerical_features:
+        #             ()
+        #         # print("{:<{}}".format("", 5), "{:.6f}".format(values[category][column]), end="")
+        #         # print("{:<{}}".rjust(5), "{:.6f}".format(values[category][column]).rjust(len(category)), end="")
+        #     print()
 
     def count(self, values):
         count_values = values["Count"]
