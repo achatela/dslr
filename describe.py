@@ -7,7 +7,11 @@ class Describe:
         self.data = [] # csv file stored as an array of dicts
         self.features_name = [] # list of str containing all the features name
         self.numerical_features = [] # list of str contraining all the features name with numerical values
+        self.values = {}
     
+    def get_values(self):
+        return self.values
+
     def parse(self, file_name):
         with open(file_name) as csv_file: # store the csv file in self.data
             reader = csv.DictReader(csv_file)
@@ -34,6 +38,7 @@ class Describe:
         values = self.percentile(values, 50) # TODO handle bonuses as input 
         values = self.percentile(values, 75) # TODO handle bonuses as input 
         values = self.max(values)
+        self.values = values
         return values
 
     def describe(self):
@@ -51,16 +56,16 @@ class Describe:
         }
         values = self.get_describe_values(values)
         # First, print the header row
-        header = "{:<30}".format("")  # Empty cell at the top left corner
+        header = "{:<15}".format("")  # Empty cell at the top left corner
         for category in values["Count"].keys():
-            header += "{:<30}".format(category)
+            header += "{:<15}".format(category)
         print(header)
 
         # Then, print the rows for each statistic
         for stat in values.keys():
-            row = "{:<30}".format(stat)  # Start with the statistic name
+            row = "{:<15}".format(stat)  # Start with the statistic name
             for category in values[stat].keys():
-                row += "{:<30.6f}".format(values[stat][category])  # Add each value
+                row += "{:<15.6f}".format(values[stat][category])  # Add each value
             print(row)
         # print(values)
         # column_names = []
@@ -188,10 +193,12 @@ class Describe:
         values["Max"] = max_values
         return values
 
+
+
 def main():
     d = Describe()
     d.parse(sys.argv[1])
     d.describe()
 
-if __name__:
+if __name__ == "__main__":
     main()
