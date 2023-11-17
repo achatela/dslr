@@ -1,5 +1,6 @@
 from describe import Describe
 import sys
+import matplotlib.pyplot as plt
 
 def main():
     d = Describe()
