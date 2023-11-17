@@ -10,7 +10,18 @@ class Describe:
         self.values = {}
     
     def get_values(self):
-        return self.values
+        values = { # dict of dict for every caterogy so when can find the Std of Herbology at values["Std"]["Herbology"]
+            "Count":{item: 0.0 for item in self.numerical_features},
+            "Mean":{item: 0.0 for item in self.numerical_features},
+            "Std":{item: 0.0 for item in self.numerical_features},
+            "Min":{item: 0.0 for item in self.numerical_features},
+            "25%":{item: 0.0 for item in self.numerical_features},
+            "50%":{item: 0.0 for item in self.numerical_features},
+            "75%":{item: 0.0 for item in self.numerical_features},
+            "Max":{item: 0.0 for item in self.numerical_features}
+        }
+        values = self.get_describe_values(values)
+        return values
 
     def parse(self, file_name):
         with open(file_name) as csv_file: # store the csv file in self.data
