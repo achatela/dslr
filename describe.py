@@ -31,6 +31,7 @@ class Describe:
         with open(file_name) as csv_file: # get the column names
             self.features_name = str(list(csv_file)[0]).strip('\n').split(',')
         self.find_numerical_columns()
+        return self.numerical_features
 
     def find_numerical_columns(self): # function to get the names of the columns that contains numerical values
         for tmp in self.features_name:
