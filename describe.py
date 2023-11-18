@@ -36,11 +36,10 @@ class Describe:
         longest_values = {}
         for statistic in description:
             for feature in description[statistic]:
-                if feature not in description[statistic][feature]:
+                if feature not in longest_values:
                     longest_values[feature] = len(feature)
-                valueLen = len(description[statistic][feature])
-                if valueLen > longest_values[feature]:
-                    longest_values[feature] = valueLen
+                if len(description[statistic][feature]) > longest_values[feature]:
+                    longest_values[feature] = len(description[statistic][feature])
 
         featuresLine = " "*6
         for feature in longest_values:
