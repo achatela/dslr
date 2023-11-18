@@ -1,6 +1,7 @@
+from math import *
 import csv
 import sys
-from math import *
+import re
 
 class Describe:
     def __init__(self, file):
@@ -14,10 +15,8 @@ class Describe:
             self.data.append(row)
             numerical_row = {}
             for feature in row:
-                try:
+                if re.fullmatch(r"[-+]?\d*\.?\d+", row[feature]):
                     numerical_row[feature] = float(row[feature])
-                except:
-                    pass
             self.numerical_data.append(numerical_row)
 
     def describe(self):
