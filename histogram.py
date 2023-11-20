@@ -15,11 +15,11 @@ def main():
     courses = []
     for feature in d.stats["Std"]:
         if feature != "Index":
-            homogeneity.append(d.stats["Std"][feature] / (d.stats["Max"][feature] - d.stats["Min"][feature]))
+            homogeneity.append(1 - (d.stats["Std"][feature] / (d.stats["Max"][feature] - d.stats["Min"][feature])))
             courses.append(feature)
     plt.bar(range(len(courses)), homogeneity)
     plt.xticks(range(len(courses)), courses)
-    plt.title("Courses Homogeneity")
+    plt.ylabel("Homogeneity")
     plt.show()
 
 if __name__ == "__main__":
