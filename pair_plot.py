@@ -17,14 +17,9 @@ def main():
             d = Describe(file)
     except:
         sys.exit("can't open file")
-    features = []
-    for feature in d.stats:
-        if feature != "Index":
-            features.append(feature)
     df = pd.DataFrame(d.numerical_data)
     df = truncate_column_names(df)
     scatter_matrix(df, alpha = 0.2, figsize = (25, 12), diagonal = 'kde')
-    plt.legend(handlelength=4)
     plt.show()
 
 
