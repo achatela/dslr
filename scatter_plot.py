@@ -1,6 +1,7 @@
 from describe import Describe
-import sys
+import distinctipy
 import matplotlib.pyplot as plt
+import sys
 
 def normalize_data(datas, categories, numerical_features):
     for category in categories:
@@ -17,8 +18,17 @@ def main():
     except:
         sys.exit("can't open file")
     x = []
+    y_dict = {}
     for stat in d.stats:
-            
+        x.append(stat)
+        for feature in d.stats[stat]:
+            if feature not in y_dict:
+                y_dict[feature] = []
+            y_dict[feature].append(d.stats[stat][feature])
+    plt.xticks(range(len(x)), x)
+    colors = distinctipy.get_colors(len(y_dict))
+    for i, feature in enumerate(y_dict):
+        plt.scatter(x, y_dict[feature], color=colors[i], label=feature)
     plt.legend()
     plt.show()  
 
