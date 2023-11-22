@@ -34,11 +34,11 @@ def main():
     selected_features = ["Astronomy", "Defense Against the Dark Arts", "Divination"]
     features_value = {item: [] for item in selected_features}
     
-    for line in d.numerical_data:
+    for line in d.data:
         for feature in line:
-            if feature in selected_features:
-                features_value[feature].append(line[feature])
-    
+            if feature in selected_features and line[feature] != '':
+                features_value[feature].append((line["Hogwarts House"], float(line[feature])))
+    print(features_value)
     thetas = []
 
     for feature in selected_features:
