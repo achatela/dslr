@@ -1,0 +1,3 @@
+
+# x = [values]
+# Prediction = theta0(biais) + theta1 * x1 + theta2 * x2....
