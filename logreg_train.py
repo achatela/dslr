@@ -6,6 +6,14 @@ def calculate_theta(feature_values):
     L = 0.0000001 # Learning Rate
 
     
+    return theta
+
+def min_max_normalization(selected_features):
+    for feature in selected_features: 
+        mini = min(selected_features[feature])[1]
+        maxi = max(selected_features[feature])[1]
+        for i in range(len(selected_features[feature])):
+            selected_features[feature][i][1] = (selected_features[feature][i][1] - mini) / (maxi - mini)
 
 def write_to_txt(thetas, selected_features):
     f = open("thetas.csv", "w")
@@ -37,7 +45,8 @@ def main():
     for line in d.data:
         for feature in line:
             if feature in selected_features and line[feature] != '':
-                features_value[feature].append((line["Hogwarts House"], float(line[feature])))
+                features_value[feature].append([line["Hogwarts House"], float(line[feature])])
+    min_max_normalization(features_value)
     print(features_value)
     thetas = []
 
