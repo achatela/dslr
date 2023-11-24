@@ -1,12 +1,8 @@
 from describe import Describe
-import distinctipy
 import matplotlib.pyplot as plt
+import itertools
 import sys
 
-def normalize_data(datas, categories, numerical_features):
-    for category in categories:
-        for feature in numerical_features:
-            datas[category][feature] = (datas[category][feature] - datas['Min'][feature]) / (datas['Max'][feature] - datas['Min'][feature])
 
 def main():
     if (len(sys.argv) != 2):
@@ -17,19 +13,41 @@ def main():
             d = Describe(file)
     except:
         sys.exit("can't open file")
+
+    normalized_data = d.numerical_data
+    for row in normalized_data:
+        row.pop("Index")
+        for feature in row:
+            row[feature] = abs(row[feature] / (d.stats["Max"][feature] - d.stats["Min"][feature]))
+
+    losses = {}
+    for row in normalized_data:
+        for i, first_feature in enumerate(row):
+            for second_feature in itertools.islice(row, i + 1, None):
+                if first_feature not in losses:
+                    losses[first_feature] = {}
+                if second_feature not in losses[first_feature]:
+                    losses[first_feature][second_feature] = 0
+                losses[first_feature][second_feature] += abs(row[first_feature] - row[second_feature])
+    
+    min_loss_features = []
+    for first_feature in losses:
+        for second_feature in losses[first_feature]:
+            if not min_loss_features:
+                min_loss_features = [first_feature, second_feature]
+            elif losses[first_feature][second_feature] < losses[min_loss_features[0]][min_loss_features[1]]:
+                min_loss_features = [first_feature, second_feature]
+    
     x = []
-    y_dict = {}
-    for stat in d.stats:
-        x.append(stat)
-        for feature in d.stats[stat]:
-            if feature not in y_dict:
-                y_dict[feature] = []
-            y_dict[feature].append(d.stats[stat][feature])
-    plt.xticks(range(len(x)), x)
-    colors = distinctipy.get_colors(len(y_dict))
-    for i, feature in enumerate(y_dict):
-        plt.scatter(x, y_dict[feature], color=colors[i], label=feature)
-    plt.legend()
+    y = []
+    for row in normalized_data:
+        if min_loss_features[0] in row and min_loss_features[1] in row:
+            x.append(row[min_loss_features[0]])
+            y.append(row[min_loss_features[1]])
+
+    plt.xlabel(min_loss_features[0])
+    plt.ylabel(min_loss_features[1])
+    plt.scatter(x, y)
     plt.show()  
 
 if __name__ == "__main__":
