@@ -181,4 +181,3 @@ if __name__ == "__main__":
 # ('Herbology', 'Transfiguration', 'Potions', 'Charms', 'Flying')
 # 81
 # ('Arithmancy', 'Astronomy', 'Herbology', 'Muggle Studies', 'Potions', 'Charms', 'Flying')
-
