@@ -18,35 +18,38 @@ def main():
     for row in normalized_data:
         row.pop("Index")
         for feature in row:
-            row[feature] = abs(row[feature] / (d.stats["Max"][feature] - d.stats["Min"][feature]))
+            row[feature] = (row[feature] - d.stats["Min"][feature]) / (d.stats["Max"][feature] - d.stats["Min"][feature])
 
-    losses = {}
+    pairs_loss = {}
     for row in normalized_data:
         for i, first_feature in enumerate(row):
             for second_feature in itertools.islice(row, i + 1, None):
-                if first_feature not in losses:
-                    losses[first_feature] = {}
-                if second_feature not in losses[first_feature]:
-                    losses[first_feature][second_feature] = 0
-                losses[first_feature][second_feature] += abs(row[first_feature] - row[second_feature])
+                if first_feature not in pairs_loss:
+                    pairs_loss[first_feature] = {}
+                if second_feature not in pairs_loss[first_feature]:
+                    pairs_loss[first_feature][second_feature] = {"total": 0, "count": 0}
+                pairs_loss[first_feature][second_feature]["total"] += abs(row[first_feature] - row[second_feature])
+                pairs_loss[first_feature][second_feature]["count"] += 1
     
-    min_loss_features = []
-    for first_feature in losses:
-        for second_feature in losses[first_feature]:
-            if not min_loss_features:
-                min_loss_features = [first_feature, second_feature]
-            elif losses[first_feature][second_feature] < losses[min_loss_features[0]][min_loss_features[1]]:
-                min_loss_features = [first_feature, second_feature]
+    closest_pair = ()
+    min_avg_loss = float("inf")
+    for first_feature in pairs_loss:
+        for second_feature in pairs_loss[first_feature]:
+            avg_loss = pairs_loss[first_feature][second_feature]["total"] / pairs_loss[first_feature][second_feature]["count"]
+            if avg_loss < min_avg_loss:
+                closest_pair = (first_feature, second_feature)
+                min_avg_loss = avg_loss
+    
+    plt.xlabel(closest_pair[0])
+    plt.ylabel(closest_pair[1])
     
     x = []
     y = []
     for row in normalized_data:
-        if min_loss_features[0] in row and min_loss_features[1] in row:
-            x.append(row[min_loss_features[0]])
-            y.append(row[min_loss_features[1]])
-
-    plt.xlabel(min_loss_features[0])
-    plt.ylabel(min_loss_features[1])
+        if closest_pair[0] in row and closest_pair[1] in row:
+            x.append(row[closest_pair[0]])
+            y.append(row[closest_pair[1]])
+    
     plt.scatter(x, y)
     plt.show()  
 
