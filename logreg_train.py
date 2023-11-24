@@ -172,3 +172,13 @@ def main():
 if __name__ == "__main__":
     main()
     print("Precision =", precision, "Overall precison =", overall_precision)
+
+# 82
+# ('Astronomy', 'Herbology', 'Defense Against the Dark Arts', 'Divination', 'Muggle Studies', 'Charms', 'Flying')
+# 80
+# ('Arithmancy', 'Astronomy', 'Herbology', 'Defense Against the Dark Arts', 'Muggle Studies', 'Potions', 'Charms', 'Flying')
+# 81
+# ('Herbology', 'Transfiguration', 'Potions', 'Charms', 'Flying')
+# 81
+# ('Arithmancy', 'Astronomy', 'Herbology', 'Muggle Studies', 'Potions', 'Charms', 'Flying')
+
