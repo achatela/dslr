@@ -1,6 +1,8 @@
 from describe import Describe
 import sys
 import numpy as np
+import ast
+
 
 # Gryffindor 0
 # Slytherin 1
@@ -46,27 +48,33 @@ def check_prediction(theta, grades, houses, answer):
                 sly_overall += sly_prob
                 raven_overall += raven_prob
                 puff_overall += puff_prob
-                print("Probabilities for", "Gryff = ", gryff_prob, "Raven =", raven_prob, "Sly =", sly_prob, "Puff =", puff_prob)
+                # print("Probabilities for", "Gryff = ", gryff_prob, "Raven =", raven_prob, "Sly =", sly_prob, "Puff =", puff_prob)
             if tmp > highest:
                 highest = tmp
                 result = houses[i]
         j += 1
         if result == answer:
             precision += 1
-        print("Student is from", result)
-    if gryff_overall > sly_overall and gryff_overall > raven_overall and gryff_overall > puff_overall and result == "Gryffindor":
+        # print("Student is from", result)
+    if gryff_overall > sly_overall and gryff_overall > raven_overall and gryff_overall > puff_overall and answer == "Gryffindor":
+        # print("Gryff", answer)
         overall_precision += 1
-    if sly_overall > gryff_overall and sly_overall > raven_overall and sly_overall > puff_overall and result == "Slytherin":
+    elif sly_overall > gryff_overall and sly_overall > raven_overall and sly_overall > puff_overall and answer == "Slytherin":
+        # print("Sly", answer)
         overall_precision += 1
-    if raven_overall > sly_overall and raven_overall > gryff_overall and raven_overall > puff_overall and result == "Ravenclaw":
+    elif raven_overall > sly_overall and raven_overall > gryff_overall and raven_overall > puff_overall and answer == "Ravenclaw":
+        # print("Raven", answer)
         overall_precision += 1
-    if puff_overall > sly_overall and puff_overall > raven_overall and puff_overall > gryff_overall and result == "Hufflepuff":
+    elif puff_overall > sly_overall and puff_overall > raven_overall and puff_overall > gryff_overall and answer == "Hufflepuff":
+        # print("Puff", answer)
         overall_precision += 1
+    # else:
+        # print("WRONG GUESS")
     # print("Overall probabilities Gryff =", gryff_overall, "Sly =", sly_overall, "Raven =", raven_overall, "Puff =", puff_overall)
 
 def calculate_theta(feature_values, house):
     theta = 1
-    L = 0.00000001 # Learning Rate
+    L = 0.00001 # Learning Rate
     epochs = 10
     
     for _ in range(epochs):
@@ -74,9 +82,9 @@ def calculate_theta(feature_values, house):
         for line in feature_values:
             h = prediction(theta, float(line[1]))
             if house != line[0]:
-                error = h + 1
-            else:
                 error = h
+            else:
+                error = h - 1
             # error = h - float(line[0])
             sums += error * float(line[1])
         theta = theta - L * sums
@@ -114,8 +122,9 @@ def get_house_value(str):
         return 3.0
 
 def main():
-    if (len(sys.argv) != 2):
-        sys.exit("wrong number of arguments")
+    print(sys.argv[2])
+    # if (len(sys.argv) != 2):
+        # sys.exit("wrong number of arguments")
     file_name = sys.argv[1]
     try:
         with open(file_name, "r") as file:
@@ -124,7 +133,12 @@ def main():
         sys.exit("can't open file")
     
     houses = ["Gryffindor", "Slytherin", "Ravenclaw", "Hufflepuff"]
-    selected_features = ["Astronomy", "Defense Against the Dark Arts", "Divination", "Muggle Studies", "Charms"] # Muggle Studie, Charms
+    # selected_features = ["Arithmancy","Astronomy","Herbology","Defense Against the Dark Arts","Divination","Muggle Studies","Ancient Runes","History of Magic","Transfiguration","Potions","Care of Magical Creatures","Charms","Flying"]
+    # selected_features = ["Astronomy", "Defense Against the Dark Arts", "Divination", "Muggle Studies", "Charms"] # Muggle Studie, Charms
+    
+    selected_features = sys.argv[2]
+    selected_features = ast.literal_eval(selected_features)
+
     features_value = {item: [] for item in selected_features}
     
     for line in d.data:
@@ -147,10 +161,13 @@ def main():
             theta_list[i].append(thetas[house][feature])
         i += 1
 
-    print(theta_list)
-    for i in range(200):
-        print(features_value["Astronomy"][i])
-        check_prediction(theta_list, [float(features_value["Astronomy"][i][1]), float(features_value["Defense Against the Dark Arts"][i][1]), float(features_value["Divination"][i][1]), float(features_value["Muggle Studies"][i][1]), float(features_value["Charms"][i][1])], houses, d.data[i]["Hogwarts House"])
+    # print(theta_list)
+
+    for i in range(100):
+        tmp = []
+        for feature in selected_features:
+            tmp.append(float(features_value[feature][i][1]))
+        check_prediction(theta_list, tmp, houses, d.data[i]["Hogwarts House"])
 
 if __name__ == "__main__":
     main()
