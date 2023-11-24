@@ -16,16 +16,21 @@ def calculate_theta(feature_values):
     L = 0.00001 # Learning Rate
     epochs = 100
     
+    # for _ in range(epochs):
+    #     sums = 0.0
+    #     for line in feature_values:
+    #         sums += prediction(theta, float(line[1])) - float(line[0]) * float(line[1])
+        # theta = theta - (L / len(feature_values)) * sums
     for _ in range(epochs):
         sums = 0.0
         for line in feature_values:
-            sums += prediction(theta, float(line[1])) - float(line[0]) * float(line[1])
-        theta = theta - (L / len(feature_values)) * sums
-    print(theta)
+            h = prediction(theta, float(line[1]))
+            error = h - float(line[0])
+            sums += error * float(line[1])
+        theta = theta - L * sums
     return theta
 
 def min_max_normalization(selected_features):
-    # return 0
     for feature in selected_features: 
         mini = min(selected_features[feature])[1]
         maxi = max(selected_features[feature])[1]
@@ -73,13 +78,13 @@ def main():
         for feature in line:
             if feature in selected_features and line[feature] != '':
                 features_value[feature].append([float(get_house_value(line["Hogwarts House"])), float(line[feature])])
-    # min_max_normalization(features_value)
+    min_max_normalization(features_value)
     # print(features_value)
     thetas = []
 
     for feature in selected_features:
         thetas.append(calculate_theta(features_value[feature]))
-    print(prediction(thetas[0], features_value["Astronomy"][0][1]))
+    print(thetas)
     write_to_txt(thetas, selected_features)
 
 if __name__ == "__main__":
