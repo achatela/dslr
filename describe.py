@@ -31,7 +31,6 @@ class Describe:
 
         self.norm_data = deepcopy(self.num_data)
         for row in self.norm_data:
-            row.pop("Index")
             for feature in row:
                 row[feature] = (row[feature] - self.stats["Min"][feature]) / (self.stats["Max"][feature] - self.stats["Min"][feature])
 
