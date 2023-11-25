@@ -17,7 +17,7 @@ def main():
             d = Describe(file)
     except:
         sys.exit("can't open file")
-    df = pd.DataFrame(d.numerical_data)
+    df = pd.DataFrame(d.num_data)
     df = truncate_column_names(df)
     scatter_matrix(df, alpha = 0.2, figsize = (8, 8), diagonal = 'kde')
     plt.show()

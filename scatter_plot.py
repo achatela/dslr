@@ -14,14 +14,8 @@ def main():
     except:
         sys.exit("can't open file")
 
-    normalized_data = d.numerical_data
-    for row in normalized_data:
-        row.pop("Index")
-        for feature in row:
-            row[feature] = (row[feature] - d.stats["Min"][feature]) / (d.stats["Max"][feature] - d.stats["Min"][feature])
-
     pairs_loss = {}
-    for row in normalized_data:
+    for row in d.norm_data:
         for i, first_feature in enumerate(row):
             for second_feature in itertools.islice(row, i + 1, None):
                 pair = (first_feature, second_feature)
@@ -42,7 +36,7 @@ def main():
     
     x = []
     y = []
-    for row in normalized_data:
+    for row in d.norm_data:
         if closest_pair[0] in row and closest_pair[1] in row:
             x.append(row[closest_pair[0]])
             y.append(row[closest_pair[1]])

@@ -1,4 +1,5 @@
 from math import *
+from copy import deepcopy
 import csv
 import sys
 import re
@@ -10,23 +11,29 @@ class Describe:
         except:
             sys.exit("file is not csv")
         self.data = [] # csv file stored as an array of dicts
-        self.numerical_data = []
+        self.num_data = []
         for row in csv_reader:
             self.data.append(row)
             numerical_row = {}
             for feature in row:
                 if re.fullmatch(r"[-+]?\d*\.?\d+", row[feature]):
                     numerical_row[feature] = float(row[feature])
-            self.numerical_data.append(numerical_row)
+            self.num_data.append(numerical_row)
         self.stats = {}
-        self.stats["Count"] = self.calculate_features_count()
-        self.stats["Mean"] = self.calculate_features_mean(self.stats["Count"])
-        self.stats["Std"] = self.calculate_features_std(self.stats["Count"], self.stats["Mean"])
-        self.stats["Min"] = self.calculate_features_min()
-        self.stats["25%"] = self.calculate_features_percentile(25, self.stats["Count"]) # TODO handle bonuses as input with other value than 25/50/75
-        self.stats["50%"] = self.calculate_features_percentile(50, self.stats["Count"]) # TODO handle bonuses as input 
-        self.stats["75%"] = self.calculate_features_percentile(75, self.stats["Count"]) # TODO handle bonuses as input 
-        self.stats["Max"] = self.calculate_features_max()
+        self.stats["Count"] = self.calculate_features_count(self.num_data)
+        self.stats["Mean"] = self.calculate_features_mean(self.num_data, self.stats["Count"])
+        self.stats["Std"] = self.calculate_features_std(self.num_data, self.stats["Count"], self.stats["Mean"])
+        self.stats["Min"] = self.calculate_features_min(self.num_data)
+        self.stats["25%"] = self.calculate_features_percentile(self.num_data, self.stats["Count"], 25) # TODO handle bonuses as input with other value than 25/50/75
+        self.stats["50%"] = self.calculate_features_percentile(self.num_data, self.stats["Count"], 50) # TODO handle bonuses as input 
+        self.stats["75%"] = self.calculate_features_percentile(self.num_data, self.stats["Count"], 75) # TODO handle bonuses as input 
+        self.stats["Max"] = self.calculate_features_max(self.num_data)
+
+        self.norm_data = deepcopy(self.num_data)
+        for row in self.norm_data:
+            row.pop("Index")
+            for feature in row:
+                row[feature] = (row[feature] - self.stats["Min"][feature]) / (self.stats["Max"][feature] - self.stats["Min"][feature])
 
     def describe(self):
         description = {}
@@ -53,18 +60,18 @@ class Describe:
                 valuesLine += description[stat][feature].rjust(max_features_len[feature] + 4)
             print(valuesLine)
 
-    def calculate_features_count(self):
+    def calculate_features_count(self, num_data):
         features_count = {}
-        for row in self.numerical_data:
+        for row in num_data:
             for feature in row:
                 if feature not in features_count:
                     features_count[feature] = 0
                 features_count[feature] += 1
         return features_count
 
-    def calculate_features_mean(self, features_count):
+    def calculate_features_mean(self, num_data, features_count):
         features_mean = {}
-        for row in self.numerical_data:
+        for row in num_data:
             for feature in row:
                 if feature not in features_mean:
                     features_mean[feature] = 0
@@ -73,9 +80,9 @@ class Describe:
             features_mean[features] = features_mean[features] / features_count[features]
         return features_mean
 
-    def calculate_features_std(self, features_count, features_mean):
+    def calculate_features_std(self, num_data, features_count, features_mean):
         features_std = {}
-        for row in self.numerical_data:
+        for row in num_data:
             for feature in row:
                 if feature not in features_std:
                     features_std[feature] = 0
@@ -84,17 +91,17 @@ class Describe:
             features_std[features] = sqrt(features_std[features] / (features_count[features] - 1))
         return features_std
 
-    def calculate_features_min(self):
+    def calculate_features_min(self, num_data):
         features_min = {}
-        for row in self.numerical_data:
+        for row in num_data:
             for feature in row:
                 if feature not in features_min or row[feature] < features_min[feature]:
                     features_min[feature] = row[feature]
         return features_min
 
-    def calculate_features_percentile(self, percentile, features_count):
+    def calculate_features_percentile(self, num_data, features_count, percentile):
         features_percentile = {}
-        for row in self.numerical_data:
+        for row in num_data:
             for feature in row:
                 if feature not in features_percentile:
                     features_percentile[feature] = []
@@ -107,9 +114,9 @@ class Describe:
             features_percentile[feature] = features_percentile[feature][int(percentile_index)] + diff
         return features_percentile
 
-    def calculate_features_max(self): 
+    def calculate_features_max(self, num_data): 
         features_max = {}
-        for row in self.numerical_data:
+        for row in num_data:
             for feature in row:
                 if feature not in features_max or row[feature] > features_max[feature]:
                     features_max[feature] = row[feature]
