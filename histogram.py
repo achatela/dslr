@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import sys
 
 def main():
-	if (len(sys.argv) != 2):
+	if len(sys.argv) != 2:
 		sys.exit("wrong number of arguments")
 	file_name = sys.argv[1]
 	try:
@@ -12,8 +12,8 @@ def main():
 	except:
 		sys.exit("can't open file")
 	
-	plt.xlabel("grading")
-	plt.ylabel("students count")
+	plt.xlabel("grade")
+	plt.ylabel("frequency")
 
 	features_norm_count = d.calculate_features_count(d.norm_data)
 	features_norm_mean = d.calculate_features_mean(d.norm_data, features_norm_count)
@@ -35,8 +35,15 @@ def main():
 		if min_std_course in d.num_data[i]:
 			houses[house].append(d.norm_data[i][min_std_course])
 
-	for house in houses:
-		plt.hist(sorted(houses[house]), label=house, alpha=0.75)
+	while houses:
+		max_house_len = float("-inf")
+		for house in houses:
+			house_len = len(houses[house])
+			if house_len > max_house_len:
+				max_house = house
+				max_house_len = house_len
+		plt.hist(houses[max_house], label=house, bins=15, alpha=0.8)
+		houses.pop(max_house)
 
 	plt.legend()
 	plt.show()
