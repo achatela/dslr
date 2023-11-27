@@ -42,9 +42,10 @@ def main():
 			if house_len > max_house_len:
 				max_house = house
 				max_house_len = house_len
-		plt.hist(houses[max_house], label=house, bins=15, alpha=0.8)
+		plt.hist(houses[max_house], label=max_house, bins=15, alpha=0.8)
 		houses.pop(max_house)
 
+	plt.title(min_std_course)
 	plt.legend()
 	plt.show()
 
