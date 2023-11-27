@@ -1,12 +1,10 @@
-from pandas.plotting import scatter_matrix
+# from pandas.plotting import scatter_matrix
+import seaborn as sns
 import pandas as pd
 from describe import Describe
 import matplotlib.pyplot as plt
 import sys
 
-def truncate_column_names(df, max_length=7):
-   df.columns = [col[:max_length] for col in df.columns]
-   return df
 
 def main():
     if (len(sys.argv) != 2):
@@ -17,11 +15,11 @@ def main():
             d = Describe(file)
     except:
         sys.exit("can't open file")
-    df = pd.DataFrame(d.norm_data)
-    df = truncate_column_names(df)
-    scatter_matrix(df, alpha = 0.2, figsize = (8, 8), diagonal = 'kde')
+    df = pd.DataFrame(d.num_data)
+    df.columns = [col.split()[0] for col in df.columns]
+    df = df.assign(house=[row["Hogwarts House"] for row in d.data]).rename(columns={"house": "Hogwarts House"})
+    sns.pairplot(df, height=1.1, hue="Hogwarts House")
     plt.show()
-
 
 if __name__ == "__main__":
     main()

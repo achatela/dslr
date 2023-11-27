@@ -33,8 +33,10 @@ def main():
 		if house not in houses:
 			houses[house] = []
 		if min_std_course in d.num_data[i]:
-			houses[house].append(d.norm_data[i][min_std_course])
+			houses[house].append(d.num_data[i][min_std_course])
 
+	plt.title(min_std_course)
+	
 	while houses:
 		max_house_len = float("-inf")
 		for house in houses:
@@ -42,10 +44,8 @@ def main():
 			if house_len > max_house_len:
 				max_house = house
 				max_house_len = house_len
-		plt.hist(houses[max_house], label=max_house, bins=15, alpha=0.8)
-		houses.pop(max_house)
+		plt.hist(houses.pop(max_house), label=max_house, bins=15, alpha=0.8)
 
-	plt.title(min_std_course)
 	plt.legend()
 	plt.show()
 

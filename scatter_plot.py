@@ -36,7 +36,7 @@ def main():
     
     x = []
     y = []
-    for row in d.norm_data:
+    for row in d.num_data:
         if closest_pair[0] in row and closest_pair[1] in row:
             x.append(row[closest_pair[0]])
             y.append(row[closest_pair[1]])
