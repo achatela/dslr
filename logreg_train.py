@@ -2,6 +2,7 @@ from describe import Describe
 import sys
 import numpy as np
 import ast
+from sklearn.metrics import accuracy_score
 
 
 # Gryffindor 0
@@ -10,14 +11,18 @@ import ast
 # Hufflepuff 3
 precision = 0
 overall_precision = 0
+y_pred = []
+y_true = []
 
 def prediction(theta, grade):
     Z = theta * grade
     return float(1/(1 + np.exp(-Z)))
 
 def check_prediction(theta, grades, houses, answer):
-    global precision
-    global overall_precision
+    global y_pred
+    global y_true
+
+    y_true.append(answer)
 
     highest = 0
     result  = str()
@@ -32,6 +37,7 @@ def check_prediction(theta, grades, houses, answer):
     raven_overall = 0
     sly_overall = 0
     puff_overall = 0
+
 
     for grade in grades:
         for i in range(len(houses)):
@@ -51,26 +57,17 @@ def check_prediction(theta, grades, houses, answer):
                 # print("Probabilities for", "Gryff = ", gryff_prob, "Raven =", raven_prob, "Sly =", sly_prob, "Puff =", puff_prob)
             if tmp > highest:
                 highest = tmp
-                result = houses[i]
         j += 1
-        if result == answer:
-            precision += 1
         # print("Student is from", result)
-    if gryff_overall > sly_overall and gryff_overall > raven_overall and gryff_overall > puff_overall and answer == "Gryffindor":
-        # print("Gryff", answer)
-        overall_precision += 1
-    elif sly_overall > gryff_overall and sly_overall > raven_overall and sly_overall > puff_overall and answer == "Slytherin":
-        # print("Sly", answer)
-        overall_precision += 1
-    elif raven_overall > sly_overall and raven_overall > gryff_overall and raven_overall > puff_overall and answer == "Ravenclaw":
-        # print("Raven", answer)
-        overall_precision += 1
-    elif puff_overall > sly_overall and puff_overall > raven_overall and puff_overall > gryff_overall and answer == "Hufflepuff":
-        # print("Puff", answer)
-        overall_precision += 1
-    # else:
-        # print("WRONG GUESS")
-    # print("Overall probabilities Gryff =", gryff_overall, "Sly =", sly_overall, "Raven =", raven_overall, "Puff =", puff_overall)
+
+    if gryff_overall > sly_overall and gryff_overall > raven_overall and gryff_overall > puff_overall:
+        y_pred.append("Gryffindor")
+    elif sly_overall > gryff_overall and sly_overall > raven_overall and sly_overall > puff_overall:
+        y_pred.append("Slytherin")
+    elif raven_overall > sly_overall and raven_overall > gryff_overall and raven_overall > puff_overall:
+        y_pred.append("Ravenclaw")
+    elif puff_overall > sly_overall and puff_overall > raven_overall and puff_overall > gryff_overall:
+        y_pred.append("Hufflepuff")
 
 def calculate_theta(feature_values, house):
     theta = 1
@@ -122,7 +119,7 @@ def get_house_value(str):
         return 3.0
 
 def main():
-    print(sys.argv[2])
+    # print(sys.argv[2])
     # if (len(sys.argv) != 2):
         # sys.exit("wrong number of arguments")
     file_name = sys.argv[1]
@@ -133,11 +130,11 @@ def main():
         sys.exit("can't open file")
     
     houses = ["Gryffindor", "Slytherin", "Ravenclaw", "Hufflepuff"]
-    # selected_features = ["Arithmancy","Astronomy","Herbology","Defense Against the Dark Arts","Divination","Muggle Studies","Ancient Runes","History of Magic","Transfiguration","Potions","Care of Magical Creatures","Charms","Flying"]
+    selected_features = ('Astronomy', 'Herbology', 'Defense Against the Dark Arts', 'Divination', 'Muggle Studies', 'Charms', 'Flying')
     # selected_features = ["Astronomy", "Defense Against the Dark Arts", "Divination", "Muggle Studies", "Charms"] # Muggle Studie, Charms
     
-    selected_features = sys.argv[2]
-    selected_features = ast.literal_eval(selected_features)
+    # selected_features = sys.argv[2]
+    # selected_features = ast.literal_eval(selected_features)
 
     features_value = {item: [] for item in selected_features}
     
@@ -171,7 +168,8 @@ def main():
 
 if __name__ == "__main__":
     main()
-    print("Precision =", precision, "Overall precison =", overall_precision)
+    print("Accuracy =", accuracy_score(y_true, y_pred) * 100, "%")
+
 
 # 82
 # ('Astronomy', 'Herbology', 'Defense Against the Dark Arts', 'Divination', 'Muggle Studies', 'Charms', 'Flying')
