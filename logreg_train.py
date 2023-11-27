@@ -14,6 +14,7 @@ overall_precision = 0
 y_pred = []
 y_true = []
 
+
 def prediction(theta, grade):
     Z = theta * grade
     return float(1/(1 + np.exp(-Z)))
@@ -21,6 +22,8 @@ def prediction(theta, grade):
 def check_prediction(theta, grades, houses, answer):
     global y_pred
     global y_true
+    global precision
+    global overall_precision
 
     y_true.append(answer)
 
@@ -57,22 +60,43 @@ def check_prediction(theta, grades, houses, answer):
                 # print("Probabilities for", "Gryff = ", gryff_prob, "Raven =", raven_prob, "Sly =", sly_prob, "Puff =", puff_prob)
             if tmp > highest:
                 highest = tmp
+                result = houses[i]
         j += 1
+        if result == answer:
+            precision += 1
         # print("Student is from", result)
 
     if gryff_overall > sly_overall and gryff_overall > raven_overall and gryff_overall > puff_overall:
         y_pred.append("Gryffindor")
+        print("Gryffindor", end="")
     elif sly_overall > gryff_overall and sly_overall > raven_overall and sly_overall > puff_overall:
         y_pred.append("Slytherin")
+        print("Slytherin", end="")
     elif raven_overall > sly_overall and raven_overall > gryff_overall and raven_overall > puff_overall:
         y_pred.append("Ravenclaw")
+        print("Ravenclaw", end="")
     elif puff_overall > sly_overall and puff_overall > raven_overall and puff_overall > gryff_overall:
         y_pred.append("Hufflepuff")
+        print("Hufflepuff", end="")
+    print("," + answer)
+
+    # if gryff_overall > sly_overall and gryff_overall > raven_overall and gryff_overall > puff_overall and answer == "Gryffindor":
+    #     # print("Gryff", answer)
+    #     overall_precision += 1
+    # elif sly_overall > gryff_overall and sly_overall > raven_overall and sly_overall > puff_overall and answer == "Slytherin":
+    #     # print("Sly", answer)
+    #     overall_precision += 1
+    # elif raven_overall > sly_overall and raven_overall > gryff_overall and raven_overall > puff_overall and answer == "Ravenclaw":
+    #     # print("Raven", answer)
+    #     overall_precision += 1
+    # elif puff_overall > sly_overall and puff_overall > raven_overall and puff_overall > gryff_overall and answer == "Hufflepuff":
+    #     # print("Puff", answer)
+    #     overall_precision += 1
 
 def calculate_theta(feature_values, house):
-    theta = 1
-    L = 0.00001 # Learning Rate
-    epochs = 10
+    theta = 0.0 
+    L = 0.00000001 # Learning Rate
+    epochs = 100
     
     for _ in range(epochs):
         sums = 0.0
@@ -81,7 +105,7 @@ def calculate_theta(feature_values, house):
             if house != line[0]:
                 error = h
             else:
-                error = h - 1
+                error = h - get_house_value(line[0])
             # error = h - float(line[0])
             sums += error * float(line[1])
         theta = theta - L * sums
@@ -126,6 +150,10 @@ def main():
     try:
         with open(file_name, "r") as file:
             d = Describe(file)
+        with open("dataset_test.csv", "r") as file2:
+            d_test = Describe(file2)
+        with open("dataset_truth.csv", "r") as file3:
+            d_truth = Describe(file3)
     except:
         sys.exit("can't open file")
     
@@ -158,16 +186,28 @@ def main():
             theta_list[i].append(thetas[house][feature])
         i += 1
 
-    # print(theta_list)
+    features_value2 = {item: [] for item in selected_features}
 
-    for i in range(100):
+    for line in d_test.data:
+        for feature in line:
+            if feature in selected_features and line[feature] != '':
+                features_value2[feature].append([line["Hogwarts House"], float(line[feature])])
+
+    # print(features_value2)
+
+    print("Index, Hogwarts House")
+    for i in range(400):
         tmp = []
         for feature in selected_features:
-            tmp.append(float(features_value[feature][i][1]))
-        check_prediction(theta_list, tmp, houses, d.data[i]["Hogwarts House"])
+            if i >= len(features_value2[feature]):
+                continue
+            tmp.append(float(features_value2[feature][i][1]))
+        check_prediction(theta_list, tmp, houses, d_truth.data[i]["Hogwarts House"])
+        # check_prediction(theta_list, tmp, houses, d.data[i]["Hogwarts House"])
 
 if __name__ == "__main__":
     main()
+    # print("Precision =", precision, "Overall precison =", overall_precision)
     print("Accuracy =", accuracy_score(y_true, y_pred) * 100, "%")
 
 
