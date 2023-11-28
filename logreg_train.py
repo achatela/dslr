@@ -56,7 +56,7 @@ def calculate_theta(feature_values, house):
     epochs = 100
     
     for _ in range(epochs):
-        sums = sum((prediction(theta, float(line[1])) - isHouse(line[0], house)) * float(line[1]) for line in feature_values)
+        sums = sum((prediction(theta, float(line[1])) - isHouse(line[0], house)) * float(line[1]) for line in feature_values) # line format: (str: House, float: Grade)
         theta = theta - L * sums
     return theta
 
