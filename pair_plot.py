@@ -18,7 +18,7 @@ def main():
     df = pd.DataFrame(d.num_data)
     df.columns = [col.split()[0] for col in df.columns]
     df = df.assign(house=[row["Hogwarts House"] for row in d.data]).rename(columns={"house": "Hogwarts House"})
-    sns.pairplot(df, height=1.1, hue="Hogwarts House")
+    sns.pairplot(df, height=0.8, hue="Hogwarts House")
     plt.show()
 
 if __name__ == "__main__":
