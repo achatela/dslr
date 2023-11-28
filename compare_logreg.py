@@ -1,10 +1,8 @@
-
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 from describe import Describe
-
 
 def main():
     with open("dataset_train.csv", "r") as file:
@@ -17,6 +15,8 @@ def main():
 
     logistic_regression = LogisticRegression()
     logistic_regression.fit(X_train, y_train)
+
+    print(logistic_regression)
 
     with open("dataset_test.csv", "r") as file:
         d_test = Describe(file)
