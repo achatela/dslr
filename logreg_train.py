@@ -19,59 +19,31 @@ def prediction(theta, grade):
     Z = theta * grade
     return float(1/(1 + np.exp(-Z)))
 
+def determine_house(overall): # "Gryffindor", "Slytherin", "Ravenclaw", "Hufflepuff"
+    if overall[0] > overall[1] and overall[0] > overall[2] and overall[0] > overall[3]:
+        return("Gryffindor")
+    elif overall[1] > overall[0] and overall[1] > overall[2] and overall[1] > overall[3]:
+        return("Slytherin")
+    elif overall[2] > overall[1] and overall[2] > overall[0] and overall[2] > overall[3]:
+        return("Ravenclaw")
+    elif overall[3] > overall[1] and overall[3] > overall[2] and overall[3] > overall[0]:
+        return("Hufflepuff")
+
 def check_prediction(theta, grades, houses, answer):
     global y_pred
     global y_true
-    global precision
-    global overall_precision
 
     y_true.append(answer)
-
-    highest = 0
-    result  = str()
     j = 0
-
-    gryff_prob = 0
-    raven_prob = 0
-    sly_prob = 0
-    puff_prob = 0
-
-    gryff_overall = 0
-    raven_overall = 0
-    sly_overall = 0
-    puff_overall = 0
-
+    overall = [0,0,0,0] # "Gryffindor", "Slytherin", "Ravenclaw", "Hufflepuff"
 
     for grade in grades:
         for i in range(len(houses)):
             tmp = prediction(theta[j][i], grade)
-            if i == 0:
-                gryff_prob = tmp
-            elif i == 1:
-                sly_prob = tmp
-            elif i == 2:
-                raven_prob = tmp
-            elif i == 3:
-                puff_prob = tmp
-                gryff_overall += gryff_prob
-                sly_overall += sly_prob
-                raven_overall += raven_prob
-                puff_overall += puff_prob
-                # print("Probabilities for", "Gryff = ", gryff_prob, "Raven =", raven_prob, "Sly =", sly_prob, "Puff =", puff_prob)
-            if tmp > highest:
-                highest = tmp
-                result = houses[i]
+            overall[i] += tmp
         j += 1
-        if result == answer:
-            precision += 1
-    if gryff_overall > sly_overall and gryff_overall > raven_overall and gryff_overall > puff_overall:
-        y_pred.append("Gryffindor")
-    elif sly_overall > gryff_overall and sly_overall > raven_overall and sly_overall > puff_overall:
-        y_pred.append("Slytherin")
-    elif raven_overall > sly_overall and raven_overall > gryff_overall and raven_overall > puff_overall:
-        y_pred.append("Ravenclaw")
-    elif puff_overall > sly_overall and puff_overall > raven_overall and puff_overall > gryff_overall:
-        y_pred.append("Hufflepuff")
+    y_pred.append(determine_house(overall))
+
 
 def isHouse(house, predictedHouse):
     if house == predictedHouse:
@@ -110,17 +82,6 @@ def write_to_txt(thetas, selected_features):
             f.write(",")
     f.write("\n")
     f.close()
-
-
-# def get_house_value(str):
-#     if str == "Gryffindor":
-#         return 0.0
-#     elif str == "Slytherin":
-#         return 1.0
-#     elif str == "Ravenclaw":
-#         return 2.0
-#     elif str == "Hufflepuff":
-#         return 3.0
 
 
 def main():
