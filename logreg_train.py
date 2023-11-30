@@ -36,7 +36,6 @@ def main():
         d_train = Describe(file)
 
     X_train = pd.DataFrame(d_train.num_data)
-    # Gryffindor 0, Hufflepuff 1, Ravenclaw 2, Slytherin 3
     X_train["Hogwarts House"] = LabelEncoder().fit_transform([row["Hogwarts House"] for row in d_train.data])
     X_data = pd.DataFrame(d_train.data)
 
