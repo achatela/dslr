@@ -50,7 +50,7 @@ def main():
 
     num_classes = 4
     num_features = X_train.shape[1]
-    alpha = 0.1
+    alpha = 0.2
     iterations = 1000
     classes_thetas = np.zeros((num_classes, num_features))
 
@@ -59,26 +59,6 @@ def main():
         classes_thetas[i] = gradient_descent(X_train, y_bin, classes_thetas[i], alpha, iterations)
 
     theta_to_csv(classes_thetas, 0, 0)
-    # with open("dataset_test.csv", "r") as file:
-    #     d_test = Describe(file)
-    # X_test = pd.DataFrame(d_test.num_data)
-    # with open("dataset_truth.csv", "r") as file:
-    #     d_truth = Describe(file)
-    # X_test["Hogwarts House"] = LabelEncoder().fit_transform([row["Hogwarts House"] for row in d_truth.data])
-    # X_data = pd.DataFrame(d_test.data)
-    # for column in X_data.columns:
-    #     if column not in X_test.columns:
-    #         X_test[column] = LabelEncoder().fit_transform(X_data[column])
-    # X_test = X_test.dropna()
-    # X_test = X_test.apply(lambda x: (x - x.min()) / (x.max() - x.min()))
-    # y_test = LabelEncoder().fit_transform(X_test["Hogwarts House"])
-    # X_test = X_test.drop(["Index", "Hogwarts House", "Best Hand", "First Name", "Last Name", "Birthday"], axis=1)
-
-    # houses_hypotesis = [hypothesis(X_test, classes_thetas[i]) for i in range(num_classes)]
-    # final_predictions = np.argmax(houses_hypotesis, axis=0)
-    # accuracy = accuracy_score(y_test, final_predictions)
-    # print("Accuracy:", accuracy)
-
 
 if __name__ == "__main__":
     main()

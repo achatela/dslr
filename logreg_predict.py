@@ -5,10 +5,10 @@ from sklearn.preprocessing import LabelEncoder
 from describe import Describe
 
 def hypothesis(X, thetas):
-    indexes = np.where(X == 3)[0]
-    for index in indexes:
-        X.remove(index)
-        thetas.pop(index)
+    # indexes = np.where(X == 3)[0]
+    # for index in indexes:
+        # X.remove(index)
+        # thetas.pop(index)
     Z = np.dot(X, thetas)
     return 1 / (1 + np.exp(-Z))
 
