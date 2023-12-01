@@ -10,11 +10,11 @@ def main():
         truth = pd.DataFrame(truth2)
         predictions = pd.DataFrame(predictions2)
     except:
-        print("Cannot open file")
+        print("Cannot open file\nYou must be in the root to execute the script")
         exit()
 
-    truth["Hogwarts House"] = LabelEncoder().fit_transform(truth["Hogwarts House"])
-    predictions["Hogwarts House"] = LabelEncoder().fit_transform(predictions["Hogwarts House"])
+    plt.xlabel("House")
+    plt.ylabel("Frequency")
 
     X_truth = []
     X_predictions = []
