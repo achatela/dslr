@@ -10,27 +10,20 @@ def hypothesis(X, thetas):
 
 def error_checking():
     if len(sys.argv) != 3:
-        print("The program should take 2 arguments: <dataset_test.csv> <weights.csv>")
-        return False
-    
-    try:
-        if not open(sys.argv[1]) or not open(sys.argv[2]):
-            pass
-    except:
-        print("One file is missing or cannot be opened!")
-        return False
+        sys.exit("The program should take 2 arguments: <dataset_test.csv> <weights.csv>")
 
 def main():
-    if error_checking():
-        exit()
+    error_checking()
 
     houses = ["Gryffindor", "Hufflepuff", "Ravenclaw", "Slytherin"]
 
-    weights = pd.read_csv(sys.argv[2])
+    try:
+        weights = pd.read_csv(sys.argv[2])
+    except:
+        sys.exit('wrong file')
     classes_thetas = pd.DataFrame(weights)
 
-    with open(sys.argv[1], "r") as file:
-        d_test = Describe(file)
+    d_test = Describe(sys.argv[1])
 
     X_test = pd.DataFrame(d_test.norm_data)
 

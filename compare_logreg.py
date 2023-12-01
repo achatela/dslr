@@ -5,8 +5,7 @@ from describe import Describe
 
 
 def main():
-    with open("dataset_train.csv", "r") as file:
-        d_train = Describe(file)
+    d_train = Describe('dataset_train.csv')
     X_train = pd.DataFrame(d_train.num_data)
     X_train["Hogwarts House"] = [row["Hogwarts House"] for row in d_train.data]
     X_train = X_train.dropna()
@@ -16,11 +15,9 @@ def main():
     logistic_regression = LogisticRegression()
     logistic_regression.fit(X_train, y_train)
 
-    with open("dataset_test.csv", "r") as file:
-        d_test = Describe(file)
+    d_test = Describe('dataset_test.csv')
     X_test = pd.DataFrame(d_test.num_data)
-    with open("dataset_truth.csv", "r") as file:
-        d_truth = Describe(file)
+    d_truth = Describe('dataset_truth.csv')
     X_test["Hogwarts House"] = [row["Hogwarts House"] for row in d_truth.data]
     X_test = X_test.dropna()
     y_test = X_test["Hogwarts House"]

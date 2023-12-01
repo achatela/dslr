@@ -5,12 +5,7 @@ import sys
 def main():
 	if len(sys.argv) != 2:
 		sys.exit("wrong number of arguments")
-	file_name = sys.argv[1]
-	try:
-		with open(file_name, "r") as file:
-			d = Describe(file)
-	except:
-		sys.exit("can't open file")
+	d = Describe(sys.argv[1])
 	
 	plt.xlabel("grade")
 	plt.ylabel("frequency")

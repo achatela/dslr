@@ -4,6 +4,7 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import accuracy_score
 from describe import Describe
 import csv
+import sys
 
 
 def hypothesis(X, thetas):
@@ -26,8 +27,9 @@ def theta_to_csv(classes_thetas):
         writer.writerows(zip(*classes_thetas))
 
 def main():
-    with open("dataset_train.csv", "r") as file:
-        d_train = Describe(file)
+    if len(sys.argv) != 2:
+        sys.exit('wrong number of arguments')
+    d_train = Describe(sys.argv[1])
 
     X_train = pd.DataFrame(d_train.norm_data)
     X_train["Hogwarts House"] = LabelEncoder().fit_transform([row["Hogwarts House"] for row in d_train.data])
