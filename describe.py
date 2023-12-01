@@ -24,9 +24,9 @@ class Describe:
         self.stats["Mean"] = self.calculate_features_mean(self.num_data, self.stats["Count"])
         self.stats["Std"] = self.calculate_features_std(self.num_data, self.stats["Count"], self.stats["Mean"])
         self.stats["Min"] = self.calculate_features_min(self.num_data)
-        self.stats["25%"] = self.calculate_features_percentile(self.num_data, self.stats["Count"], 25) # TODO handle bonuses as input with other value than 25/50/75
-        self.stats["50%"] = self.calculate_features_percentile(self.num_data, self.stats["Count"], 50) # TODO handle bonuses as input 
-        self.stats["75%"] = self.calculate_features_percentile(self.num_data, self.stats["Count"], 75) # TODO handle bonuses as input 
+        self.stats["25%"] = self.calculate_features_percentile(self.num_data, self.stats["Count"], 25)
+        self.stats["50%"] = self.calculate_features_percentile(self.num_data, self.stats["Count"], 50)
+        self.stats["75%"] = self.calculate_features_percentile(self.num_data, self.stats["Count"], 75)
         self.stats["Max"] = self.calculate_features_max(self.num_data)
 
         self.norm_data = deepcopy(self.num_data)
