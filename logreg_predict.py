@@ -35,7 +35,7 @@ def main():
     X_test = pd.DataFrame(d_test.norm_data)
 
     X_test = X_test.fillna(0)
-    X_test = X_test.drop(["Index"], axis=1)
+    X_test = X_test.drop(["Index", "Arithmancy", "Care of Magical Creatures"], axis=1)
 
     houses_hypotesis = [hypothesis(X_test, classes_thetas[house]) for house in houses]
     final_predictions = np.argmax(houses_hypotesis, axis=0)

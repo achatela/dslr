@@ -34,7 +34,7 @@ def main():
 
     X_train = X_train.fillna(0)
     y_train = LabelEncoder().fit_transform(X_train["Hogwarts House"])
-    X_train = X_train.drop(["Index", "Hogwarts House"], axis=1)
+    X_train = X_train.drop(["Index", "Hogwarts House", "Arithmancy", "Care of Magical Creatures"], axis=1)
 
     num_classes = 4
     num_features = X_train.shape[1]
