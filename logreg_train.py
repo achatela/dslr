@@ -19,7 +19,7 @@ def gradient_descent(X, y, thetas, alpha, iterations):
 
 def theta_to_csv(classes_thetas, i, j):
     f = open("weights.csv", "w")
-    f.write("Gryffindor, Hufflepuff, Ravenclaw, Slytherin\n")
+    f.write("Gryffindor,Hufflepuff,Ravenclaw,Slytherin\n")
     while j < len(classes_thetas[i]):
         while i < len(classes_thetas):
             f.write(f"{classes_thetas[i][j]}")
@@ -46,7 +46,7 @@ def main():
     X_train = X_train.dropna()
     X_train = X_train.apply(lambda x: (x - x.min()) / (x.max() - x.min())) # Normalize the datas
     y_train = LabelEncoder().fit_transform(X_train["Hogwarts House"])
-    X_train = X_train.drop(["Index", "Hogwarts House"], axis=1)
+    X_train = X_train.drop(["Index", "Hogwarts House", "Best Hand", "First Name", "Last Name", "Birthday"], axis=1)
 
     num_classes = 4
     num_features = X_train.shape[1]
@@ -72,7 +72,7 @@ def main():
     # X_test = X_test.dropna()
     # X_test = X_test.apply(lambda x: (x - x.min()) / (x.max() - x.min()))
     # y_test = LabelEncoder().fit_transform(X_test["Hogwarts House"])
-    # X_test = X_test.drop(["Index", "Hogwarts House"], axis=1)
+    # X_test = X_test.drop(["Index", "Hogwarts House", "Best Hand", "First Name", "Last Name", "Birthday"], axis=1)
 
     # houses_hypotesis = [hypothesis(X_test, classes_thetas[i]) for i in range(num_classes)]
     # final_predictions = np.argmax(houses_hypotesis, axis=0)
