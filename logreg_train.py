@@ -21,7 +21,7 @@ def batch_gradient_descent(X, y, m, weights, learning_rate, epochs, batch_size):
         weights = weights - learning_rate * gradient
     return weights
 
-def stochiastic_gradient_descent(X, y, m, weights, learning_rate, epochs, batch_size):
+def stochastic_gradient_descent(X, y, m, weights, learning_rate, epochs, batch_size):
     for _ in range(epochs):
         indices = np.random.permutation(m)
         X = X.iloc[indices]
@@ -44,11 +44,11 @@ def gradient_descent(X, y, m, weights, learning_rate, epochs):
 def main():
     if len(sys.argv) != 2 and len(sys.argv) != 3:
         sys.exit('wrong number of arguments')
-    is_stochiastic = False
+    is_stochastic = False
     is_batch = False
     if len(sys.argv) == 3:
-        if sys.argv[2] == 'stochiastic':
-            is_stochiastic = True
+        if sys.argv[2] == 'stochastic':
+            is_stochastic = True
         elif sys.argv[2] == 'batch':
             is_batch = True
         else:
@@ -72,8 +72,8 @@ def main():
     for c in classes:
         classes_weights[c] = np.zeros(num_features)
         y_bin = np.where(y_train == c, 1, 0)
-        if is_stochiastic:
-            classes_weights[c] = stochiastic_gradient_descent(X_train, y_bin, num_samples, classes_weights[c], learning_rate, epochs, batch_size)
+        if is_stochastic:
+            classes_weights[c] = stochastic_gradient_descent(X_train, y_bin, num_samples, classes_weights[c], learning_rate, epochs, batch_size)
         elif is_batch:
             classes_weights[c] = batch_gradient_descent(X_train, y_bin, num_samples, classes_weights[c], learning_rate, epochs, batch_size)
         else:
