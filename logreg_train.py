@@ -7,48 +7,79 @@ import csv
 import sys
 
 
-def hypothesis(X, thetas):
-    Z = np.dot(X, thetas)
+def hypothesis(X, weights):
+    Z = np.dot(X, weights)
     return 1 / (1 + np.exp(-Z))
 
-def gradient_descent(X, y, thetas, alpha, iterations):
-    m = len(y)
-    for _ in range(iterations):
-        h = hypothesis(X, thetas)
-        gradient = np.dot(X.T, (h - y)) / m
-        thetas = thetas - alpha * gradient
-    return thetas
+def batch_gradient_descent(X, y, m, weights, learning_rate, epochs, batch_size):
+    for _ in range(epochs):
+        indices = np.random.choice(m, batch_size)
+        X_batch = X.iloc[indices]
+        y_batch = y[indices]
+        h = hypothesis(X_batch, weights)
+        gradient = np.dot(X_batch.T, h - y_batch) / m
+        weights = weights - learning_rate * gradient
+    return weights
 
+def stochiastic_gradient_descent(X, y, m, weights, learning_rate, epochs, batch_size):
+    for _ in range(epochs):
+        indices = np.random.permutation(m)
+        X = X.iloc[indices]
+        y = y[indices]
+        for i in range(0, m, batch_size):
+            X_batch = X.iloc[i:i+batch_size]
+            y_batch = y[i:i+batch_size]
+            h = hypothesis(X_batch, weights)
+            gradient = np.dot(X_batch.T, h - y_batch) / m
+            weights = weights - learning_rate * gradient
+    return weights
 
-def theta_to_csv(classes_thetas):
-    with open('weights.csv', 'w', newline='') as f:
-        writer = csv.writer(f)
-        writer.writerow(["Gryffindor", "Hufflepuff", "Ravenclaw", "Slytherin"])
-        writer.writerows(zip(*classes_thetas))
+def gradient_descent(X, y, m, weights, learning_rate, epochs):
+    for _ in range(epochs):
+        h = hypothesis(X, weights)
+        gradient = np.dot(X.T, h - y) / m
+        weights = weights - learning_rate * gradient
+    return weights
 
 def main():
-    if len(sys.argv) != 2:
+    if len(sys.argv) != 2 and len(sys.argv) != 3:
         sys.exit('wrong number of arguments')
+    is_stochiastic = False
+    is_batch = False
+    if len(sys.argv) == 3:
+        if sys.argv[2] == 'stochiastic':
+            is_stochiastic = True
+        elif sys.argv[2] == 'batch':
+            is_batch = True
+        else:
+            sys.exit('wrong algorithm')
+
     d_train = Describe(sys.argv[1])
 
     X_train = pd.DataFrame(d_train.norm_data)
-    X_train["Hogwarts House"] = LabelEncoder().fit_transform([row["Hogwarts House"] for row in d_train.data])
-
     X_train = X_train.fillna(0)
-    y_train = LabelEncoder().fit_transform(X_train["Hogwarts House"])
-    X_train = X_train.drop(["Index", "Hogwarts House", "Arithmancy", "Care of Magical Creatures"], axis=1)
+    X_train = X_train.drop(["Index", "Arithmancy", "Care of Magical Creatures"], axis=1)
+    num_samples, num_features = X_train.shape
 
-    num_classes = 4
-    num_features = X_train.shape[1]
-    alpha = 2
-    iterations = 1000
-    classes_thetas = np.zeros((num_classes, num_features))
+    y_train = np.array([row["Hogwarts House"] for row in d_train.data])
+    classes = np.unique(y_train)
+    classes_weights = pd.DataFrame(columns=classes)
+    
+    learning_rate = 2
+    epochs = 1000
+    batch_size = num_samples // 10
 
-    for i in range(num_classes):
-        y_bin = np.where(y_train == i, 1, 0)
-        classes_thetas[i] = gradient_descent(X_train, y_bin, classes_thetas[i], alpha, iterations)
+    for c in classes:
+        classes_weights[c] = np.zeros(num_features)
+        y_bin = np.where(y_train == c, 1, 0)
+        if is_stochiastic:
+            classes_weights[c] = stochiastic_gradient_descent(X_train, y_bin, num_samples, classes_weights[c], learning_rate, epochs, batch_size)
+        elif is_batch:
+            classes_weights[c] = batch_gradient_descent(X_train, y_bin, num_samples, classes_weights[c], learning_rate, epochs, batch_size)
+        else:
+            classes_weights[c] = gradient_descent(X_train, y_bin, num_samples, classes_weights[c], learning_rate, epochs)
 
-    theta_to_csv(classes_thetas)
+    classes_weights.to_csv('weights.csv', index=False)
 
 if __name__ == "__main__":
     main()

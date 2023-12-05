@@ -3,6 +3,7 @@ import numpy as np
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 
+
 if __name__ == '__main__':
     pred = pd.read_csv("houses.csv", delimiter=",")
     true = pd.read_csv("dataset_truth.csv", delimiter=",")

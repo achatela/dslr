@@ -4,8 +4,8 @@ import numpy as np
 from sklearn.preprocessing import LabelEncoder
 from describe import Describe
 
-def hypothesis(X, thetas):
-    Z = np.dot(X, thetas)
+def hypothesis(X, weights):
+    Z = np.dot(X, weights)
     return 1 / (1 + np.exp(-Z))
 
 def error_checking():
@@ -15,29 +15,24 @@ def error_checking():
 def main():
     error_checking()
 
-    houses = ["Gryffindor", "Hufflepuff", "Ravenclaw", "Slytherin"]
+    d_test = Describe(sys.argv[1])
+    X_test = pd.DataFrame(d_test.norm_data)
+    X_test = X_test.fillna(0)
+    X_test = X_test.drop(["Index", "Arithmancy", "Care of Magical Creatures"], axis=1)
 
     try:
         weights = pd.read_csv(sys.argv[2])
     except:
         sys.exit('wrong file')
-    classes_thetas = pd.DataFrame(weights)
+    classes_weights = pd.DataFrame(weights)
+    classes = classes_weights.columns
 
-    d_test = Describe(sys.argv[1])
+    houses_hypotesis = [hypothesis(X_test, classes_weights[c]) for c in classes]
+    indices_predictions = np.argmax(houses_hypotesis, axis=0)
+    classes_predictions = np.array([classes[i] for i in indices_predictions])
+    final_predictions = pd.DataFrame({"Hogwarts House": classes_predictions})
 
-    X_test = pd.DataFrame(d_test.norm_data)
-
-    X_test = X_test.fillna(0)
-    X_test = X_test.drop(["Index", "Arithmancy", "Care of Magical Creatures"], axis=1)
-
-    houses_hypotesis = [hypothesis(X_test, classes_thetas[house]) for house in houses]
-    final_predictions = np.argmax(houses_hypotesis, axis=0)
-
-    f = open("houses.csv", "w")
-    f.write("Index,Hogwarts House\n")
-    for i in range(len(final_predictions)):
-        f.write(f"{i},{houses[final_predictions[i]]}\n")
-    f.close()
+    final_predictions.to_csv("houses.csv", index_label="Index")
 
 if __name__ == "__main__":
     main()
