@@ -73,6 +73,8 @@ def main():
     classes_weights = pd.DataFrame(columns=classes)
     
     learning_rate = 2
+    if activation_function != "sigmoid":
+        learning_rate = 1
     epochs = 1000
     batch_size = num_samples // 10
 
