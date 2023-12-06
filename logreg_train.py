@@ -6,6 +6,11 @@ from describe import Describe
 import csv
 import sys
 
+activation_function = ""
+
+def hyperbolic_tangent(X, weights):
+    Z = np.dot(X, weights)
+    return ((2 / (1 + np.exp(-2*Z)) - 1))
 
 def hypothesis(X, weights):
     Z = np.dot(X, weights)
