@@ -6,15 +6,14 @@ from describe import Describe
 import csv
 import sys
 
-activation_function = ""
-
-def hyperbolic_tangent(X, weights):
-    Z = np.dot(X, weights)
-    return ((2 / (1 + np.exp(-2*Z)) - 1))
+activation_function = "sigmoid"
 
 def hypothesis(X, weights):
     Z = np.dot(X, weights)
-    return 1 / (1 + np.exp(-Z))
+    if activation_function == "sigmoid":
+        return 1 / (1 + np.exp(-Z))
+    else:
+        return ((2 / (1 + np.exp(-2*Z)) - 1))
 
 def batch_gradient_descent(X, y, m, weights, learning_rate, epochs, batch_size):
     for _ in range(epochs):
@@ -47,6 +46,7 @@ def gradient_descent(X, y, m, weights, learning_rate, epochs):
     return weights
 
 def main():
+    global activation_function
     if len(sys.argv) != 2 and len(sys.argv) != 3:
         sys.exit('wrong number of arguments')
     is_stochastic = False
@@ -56,6 +56,8 @@ def main():
             is_stochastic = True
         elif sys.argv[2] == 'batch':
             is_batch = True
+        elif sys.argv[2] == 'tanh':
+            activation_function = "hyperbolic_tangent"
         else:
             sys.exit('wrong algorithm')
 
